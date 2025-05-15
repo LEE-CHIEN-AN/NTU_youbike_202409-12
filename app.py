@@ -15,19 +15,23 @@ merged_df = pd.merge(stats_df, sites_df, on="sno")
 
 # Streamlit 網頁設定
 st.set_page_config(page_title="YouBike 站點統計地圖", layout="wide")
-st.title("🚲 YouBike 各站點小時統計地圖")
+st.title("🚲 YouBike 2024 09/01到12/25 各站點小時統計地圖")
 
-# 選單：選擇小時
+# 使用者選擇小時與站點（可複選）
 hour = st.selectbox("請選擇要查看的時段 (24hr)", list(range(24)), index=8)
+station_options = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
+station_names = station_options['sna'].tolist()
+selected_stations = st.multiselect("選擇要顯示的站點（可複選）", station_names, default=station_names[:5])
+
+# 篩選資料
+filtered_df = merged_df[(merged_df['hour'] == hour) & (merged_df['sna'].isin(selected_stations))]
 
 # 建立 Folium 地圖
-def create_map(hour):
+def create_map(data):
     m = folium.Map(location=[25.014, 121.535], zoom_start=15)
     marker_cluster = MarkerCluster().add_to(m)
 
-    hour_data = merged_df[merged_df['hour'] == hour]
-
-    for _, row in hour_data.iterrows():
+    for _, row in data.iterrows():
         popup_text = f"""
         <b>{row['sna']}</b><br>
         行政區: {row['sarea']}<br>
@@ -48,4 +52,4 @@ def create_map(hour):
     return m
 
 # 顯示地圖
-st_data = st_folium(create_map(hour), width=1000, height=700)
+st_data = st_folium(create_map(filtered_df), width=1000, height=700)
