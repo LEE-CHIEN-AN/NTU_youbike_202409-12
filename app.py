@@ -23,7 +23,7 @@ merged_df = pd.merge(stats_df, sites_df, on="sno")
 
 # Streamlit page setup
 st.set_page_config(page_title="YouBike Station Dashboard", layout="wide")
-st.title("🚲 NTU History YouBike Station Dashboard 24/09/01-24/12/25")
+st.title("🚲 NTU History YouBike Station Dashboard 台大 YouBike 歷史紀錄 車站儀表板  24/09/01-24/12/25")
 
 # Page selector
 page = st.sidebar.radio("Choose a view:", ["Map View", "Hourly Line Chart", "Current API vs Stats"])
@@ -46,13 +46,13 @@ if page == "Map View":
         for _, row in hour_data.iterrows():
             popup_text = f"""
             <b>{row['sna']}</b><br>
-            District: {row['sarea']}<br>
-            Address: {row['ar']}<br>
+            District 行政區: {row['sarea']}<br>
+            Address 地址: {row['ar']}<br>
             <b>{hour}:00 - {hour+1}:00</b><br>
-            Avg. Rentable Bikes: {row['avg_available_rent_bike']:.2f}<br>
-            Avg. Returnable Bikes: {row['avg_available_return_bike']:.2f}<br>
-            Rent Availability: {row['avg_available_rent_ratio']:.2%}<br>
-            Return Availability: {row['avg_available_return_ratio']:.2%}
+            Avg. Rentable Bikes 可借車輛數: {row['avg_available_rent_bike']:.2f}<br>
+            Avg. Returnable Bikes 可還車輛數: {row['avg_available_return_bike']:.2f}<br>
+            Rent Availability 可借機率: {row['avg_available_rent_ratio']:.2%}<br>
+            Return Availability 可還機率: {row['avg_available_return_ratio']:.2%}
             """
             folium.Marker(
                 location=[row['latitude'], row['longitude']],
@@ -63,8 +63,8 @@ if page == "Map View":
 
     st_data = st_folium(create_map(hour), width=1000, height=700)
 
-elif page == "Hourly Line Chart":
-    st.header("📈 Hourly Trend for a Selected Station")
+elif page == "Hourly Line Chart 每小時折線圖":
+    st.header("📈 Hourly Trend for a Selected Station 選定車站的每小時趨勢")
     station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')['sna'].tolist()
     selected_sna = st.selectbox("Select a station", station_names)
     station_hourly = merged_df[merged_df['sna'] == selected_sna].sort_values("hour")
@@ -80,8 +80,8 @@ elif page == "Hourly Line Chart":
     #ax.grid(True)
     st.pyplot(fig)
 
-elif page == "Current API vs Stats":
-    st.header("📊 Real-Time vs Historical Hourly Statistics")
+elif page == "Current  vs Stats 目前的  vs 統計資料":
+    st.header("📊 Real-Time vs Historical Hourly Statistics 即時 vs 歷史每小時統計資料")
 
     import pytz
 
@@ -109,20 +109,20 @@ elif page == "Current API vs Stats":
         stat_row = merged_df[(merged_df['sno'] == station_id) & (merged_df['hour'] == current_hour)].iloc[0]
 
         st.markdown(f"### ⏱️ {selected_sna} @ {current_hour}:00")
-        st.write("**Real-time Data:**")
-        st.write(f"Current Rentable Bikes: {realtime_row['available_rent_bikes']}")
-        st.write(f"Current Returnable Slots: {realtime_row['available_return_bikes']}")
-        st.write(f"Rent Availability: {realtime_row['available_rent_bikes']/realtime_row['total']:.2%}")
-        st.write(f"Return Availability: {realtime_row['available_return_bikes']/realtime_row['total']:.2%}")
+        st.write("**Real-time Data 即時資料:**")
+        st.write(f"Current Rentable Bikes 目前可借車輛數: {realtime_row['available_rent_bikes']}")
+        st.write(f"Current Returnable Slots 目前可還車輛數: {realtime_row['available_return_bikes']}")
+        st.write(f"Rentable bike count rate  可借到車的機率 : {realtime_row['available_rent_bikes']/realtime_row['total']:.2%}")
+        st.write(f"Returnable bike count rate 可還到車的機率: {realtime_row['available_return_bikes']/realtime_row['total']:.2%}")
 
         st.write("**Historical Average at This Hour:**")
-        st.write(f"Avg. Rentable Bikes: {stat_row['avg_available_rent_bike']:.2f}")
-        st.write(f"Avg. Returnable Bikes: {stat_row['avg_available_return_bike']:.2f}")
-        st.write(f"Rent Availability: {stat_row['avg_available_rent_ratio']:.2%}")
-        st.write(f"Return Availability: {stat_row['avg_available_return_ratio']:.2%}")
+        st.write(f"Avg. Rentable Bikes 歷史此小時平均可借車輛數: {stat_row['avg_available_rent_bike']:.2f}")
+        st.write(f"Avg. Returnable Bikes 歷史此小時平均可借車輛數: {stat_row['avg_available_return_bike']:.2f}")
+        st.write(f"Rentable bike count rate 可借到車的機率: {stat_row['avg_available_rent_ratio']:.2%}")
+        st.write(f"Returnable bike count rate 可還到車的機率: {stat_row['avg_available_return_ratio']:.2%}")
 
     # 顯示地圖標記該站點
-        st.subheader("📍 Map View of This Station")
+        st.subheader("📍 Map View of This Station 此站點的地圖檢視")
         realtime_map = folium.Map(location=[station_info['latitude'], station_info['longitude']], zoom_start=16)
         popup_text = f"""
         <b>{selected_sna}</b><br>
