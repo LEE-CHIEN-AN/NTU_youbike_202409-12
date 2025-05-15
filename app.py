@@ -94,6 +94,10 @@ elif page == "Current API vs Stats":
         station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
         selected_sna = st.selectbox("Select a station to compare", station_names['sna'].tolist(), key="compare")
 
+       # 使用者選擇站點
+        station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
+        selected_sna = st.selectbox("Select a station to compare", station_names['sna'].tolist(), key="compare")
+
         station_info = sites_df[sites_df['sna'] == selected_sna].iloc[0]
         station_id = station_info['sno']
 
@@ -102,8 +106,8 @@ elif page == "Current API vs Stats":
 
         st.markdown(f"### ⏱️ {selected_sna} @ {current_hour}:00")
         st.write("**Real-time Data:**")
-        st.write(f"Current Rentable Bikes: {realtime_row['current_rentable']}")
-        st.write(f"Current Returnable Slots: {realtime_row['current_returnable']}")
+        st.write(f"Current Rentable Bikes: {realtime_row['available_rent_bikes']}")
+        st.write(f"Current Returnable Slots: {realtime_row['available_return_bikes']}")
 
         st.write("**Historical Average at This Hour:**")
         st.write(f"Avg. Rentable Bikes: {stat_row['avg_available_rent_bike']:.2f}")
