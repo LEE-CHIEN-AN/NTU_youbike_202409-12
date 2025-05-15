@@ -70,9 +70,9 @@ elif page == "Hourly Line Chart":
     ax.set_xticks(range(24))
     ax.set_xlabel("Hour")
     ax.set_ylabel("Bike Count")
-    ax.set_title(f"{selected_sna} Hourly Availability")
+    ax.set_title(f"Hourly Availability")
     ax.legend()
-    ax.grid(True)
+    #ax.grid(True)
     st.pyplot(fig)
 
 elif page == "Current API vs Stats":
