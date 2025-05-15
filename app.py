@@ -80,33 +80,35 @@ elif page == "Hourly Line Chart 每小時折線圖":
     #ax.grid(True)
     st.pyplot(fig)
 
-elif page == "Current vs Stats 目前的 vs 統計資料":
-    st.header("📊 Real-Time vs Historical Hourly Statistics 即時 vs 歷史每小時統計資料")
+st.header("📊 Real-Time vs Historical Hourly Statistics 即時 vs 歷史每小時統計資料")
 
     import pytz
-
-    # 使用台灣時區取得目前小時
     tz = pytz.timezone("Asia/Taipei")
     now = datetime.datetime.now(tz)
     current_hour = now.hour
-
-  
 
     api_url = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
     try:
         r = requests.get(api_url)
         realtime_df = pd.DataFrame(r.json())
         realtime_df["sno"] = pd.to_numeric(realtime_df["sno"], errors="coerce")
+        realtime_df["latitude"] = pd.to_numeric(realtime_df["latitude"], errors="coerce")
+        realtime_df["longitude"] = pd.to_numeric(realtime_df["longitude"], errors="coerce")
 
         # 地圖 + 下拉式選單選擇站點
         st.markdown("請從地圖點選或下拉選單選擇一個站點以比較即時與歷史資料")
         select_map = folium.Map(location=[25.014, 121.535], zoom_start=15)
         for _, row in sites_df.iterrows():
-            folium.Marker(
-                location=[row['latitude'], row['longitude']],
-                popup=row['sna'],
-                icon=folium.Icon(color='blue', icon='bicycle', prefix='fa')
-            ).add_to(select_map)
+            try:
+                lat = float(row['latitude'])
+                lon = float(row['longitude'])
+                folium.Marker(
+                    location=[lat, lon],
+                    popup=row['sna'],
+                    icon=folium.Icon(color='blue', icon='bicycle', prefix='fa')
+                ).add_to(select_map)
+            except:
+                continue
 
         select_data = st_folium(select_map, width=700, height=450)
 
