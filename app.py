@@ -17,7 +17,7 @@ merged_df = pd.merge(stats_df, sites_df, on="sno")
 st.set_page_config(page_title="YouBike 站點統計地圖", layout="wide")
 st.title("🚲 YouBike 各站點小時統計地圖")
 
-# 使用者選擇小時與站點（可複選）
+# 使用者選擇地圖顯示用的小時與站點（可複選）
 hour = st.selectbox("請選擇要查看的時段 (24hr)", list(range(24)), index=8)
 station_options = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
 station_names = station_options['sna'].tolist()
@@ -43,10 +43,17 @@ def create_map(data):
 # 顯示地圖
 st_data = st_folium(create_map(filtered_df), width=1000, height=700)
 
-# 顯示站點統計資訊表格
-st.subheader(f"📊 {hour}:00 - {hour+1}:00 統計資料")
+# 額外統計區塊（用下拉選單選小時與多站點）
+st.subheader("📋 站點統計資料表")
+stat_hour = st.selectbox("選擇統計資料時段 (24hr)", list(range(24)), index=8, key="table_hour")
+stat_stations = st.multiselect("選擇要顯示在表格的站點（可複選）", station_names, default=station_names[:5], key="table_stations")
+
+# 篩選表格資料
+stat_df = merged_df[(merged_df['hour'] == stat_hour) & (merged_df['sna'].isin(stat_stations))]
+
+# 顯示統計資料表格
 st.dataframe(
-    filtered_df[[
+    stat_df[[
         "sna", "sarea", "avg_available_rent_bike", "avg_available_return_bike",
         "avg_available_rent_ratio", "avg_available_return_ratio"
     ]].rename(columns={
