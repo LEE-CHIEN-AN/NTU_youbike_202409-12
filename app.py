@@ -15,7 +15,7 @@ merged_df = pd.merge(stats_df, sites_df, on="sno")
 
 # Streamlit 網頁設定
 st.set_page_config(page_title="YouBike 站點統計地圖", layout="wide")
-st.title("🚲 YouBike 2024 09/01到12/25 各站點小時統計地圖")
+st.title("🚲 YouBike 各站點小時統計地圖")
 
 # 使用者選擇小時與站點（可複選）
 hour = st.selectbox("請選擇要查看的時段 (24hr)", list(range(24)), index=8)
@@ -26,26 +26,15 @@ selected_stations = st.multiselect("選擇要顯示的站點（可複選）", st
 # 篩選資料
 filtered_df = merged_df[(merged_df['hour'] == hour) & (merged_df['sna'].isin(selected_stations))]
 
-# 建立 Folium 地圖
+# 建立 Folium 地圖（僅顯示地點標記，不含統計）
 def create_map(data):
     m = folium.Map(location=[25.014, 121.535], zoom_start=15)
     marker_cluster = MarkerCluster().add_to(m)
 
     for _, row in data.iterrows():
-        popup_text = f"""
-        <b>{row['sna']}</b><br>
-        行政區: {row['sarea']}<br>
-        地址: {row['ar']}<br>
-        <hr>
-        <b>{hour}:00 - {hour+1}:00</b><br>
-        可借車輛數: {row['avg_available_rent_bike']:.2f}<br>
-        可還車輛數: {row['avg_available_return_bike']:.2f}<br>
-        可借機率: {row['avg_available_rent_ratio']:.2%}<br>
-        可還機率: {row['avg_available_return_ratio']:.2%}
-        """
         folium.Marker(
             location=[row['latitude'], row['longitude']],
-            popup=folium.Popup(popup_text, max_width=300),
+            popup=row['sna'],
             icon=folium.Icon(color='blue', icon='bicycle', prefix='fa')
         ).add_to(marker_cluster)
 
@@ -53,3 +42,20 @@ def create_map(data):
 
 # 顯示地圖
 st_data = st_folium(create_map(filtered_df), width=1000, height=700)
+
+# 顯示站點統計資訊表格
+st.subheader(f"📊 {hour}:00 - {hour+1}:00 統計資料")
+st.dataframe(
+    filtered_df[[
+        "sna", "sarea", "avg_available_rent_bike", "avg_available_return_bike",
+        "avg_available_rent_ratio", "avg_available_return_ratio"
+    ]].rename(columns={
+        "sna": "站點名稱",
+        "sarea": "行政區",
+        "avg_available_rent_bike": "可借車輛數",
+        "avg_available_return_bike": "可還車輛數",
+        "avg_available_rent_ratio": "可借機率",
+        "avg_available_return_ratio": "可還機率"
+    }),
+    use_container_width=True
+)
