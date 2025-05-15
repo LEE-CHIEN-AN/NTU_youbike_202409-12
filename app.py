@@ -48,7 +48,6 @@ if page == "Map View":
             <b>{row['sna']}</b><br>
             District: {row['sarea']}<br>
             Address: {row['ar']}<br>
-            <hr>
             <b>{hour}:00 - {hour+1}:00</b><br>
             Avg. Rentable Bikes: {row['avg_available_rent_bike']:.2f}<br>
             Avg. Returnable Bikes: {row['avg_available_return_bike']:.2f}<br>
