@@ -120,6 +120,28 @@ elif page == "Current API vs Stats":
         st.write(f"Rent Availability: {stat_row['avg_available_rent_ratio']:.2%}")
         st.write(f"Return Availability: {stat_row['avg_available_return_ratio']:.2%}")
 
+    # 顯示地圖標記該站點
+        st.subheader("📍 Map View of This Station")
+        realtime_map = folium.Map(location=[station_info['latitude'], station_info['longitude']], zoom_start=16)
+        popup_text = f"""
+        <b>{selected_sna}</b><br>
+        District: {station_info['sarea']}<br>
+        Address: {station_info['ar']}<br>
+        <hr>
+        <b>{current_hour}:00 - {current_hour+1}:00</b><br>
+        Current Rentable Bikes: {realtime_row['available_rent_bikes']}<br>
+        Current Returnable Slots: {realtime_row['available_return_bikes']}<br>
+        Avg. Rentable Bikes: {stat_row['avg_available_rent_bike']:.2f}<br>
+        Avg. Returnable Bikes: {stat_row['avg_available_return_bike']:.2f}
+        """
+        folium.Marker(
+            location=[station_info['latitude'], station_info['longitude']],
+            popup=folium.Popup(popup_text, max_width=300),
+            icon=folium.Icon(color='green', icon='info-sign')
+        ).add_to(realtime_map)
+
+        st_folium(realtime_map, width=700, height=450)
+
     except Exception as e:
         st.error("Failed to fetch real-time data. Please try again later.")
         st.error(str(e))
