@@ -62,7 +62,7 @@ if page == "Map View":
             ).add_to(marker_cluster)
         return m
 
-    st_data = st_folium(create_map(display_hour), width=1000, height=700)
+    st_data = st_folium(create_map(hour), width=1000, height=700)
 
 elif page == "Hourly Line Chart":
     st.header("📈 Hourly Trend for a Selected Station")
