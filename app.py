@@ -23,7 +23,7 @@ merged_df = pd.merge(stats_df, sites_df, on="sno")
 
 # Streamlit page setup
 st.set_page_config(page_title="YouBike Station Dashboard", layout="wide")
-st.title("🚲 YouBike Station Dashboard")
+st.title("🚲 NTU History YouBike Station Dashboard 24/09/01-24/12/25")
 
 # Page selector
 page = st.sidebar.radio("Choose a view:", ["Map View", "Hourly Line Chart", "Current API vs Stats"])
