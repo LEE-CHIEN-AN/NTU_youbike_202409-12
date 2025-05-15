@@ -6,11 +6,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
-# 使用思源黑體或其他支援中文字體
-plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft JhengHei', 'Arial Unicode MS', 'Heiti TC', 'Noto Sans CJK TC']
-plt.rcParams['axes.unicode_minus'] = False  # 正常顯示負號
-
 
 # 載入資料
 stats_df = pd.read_csv("hourly_station_availability.csv")
