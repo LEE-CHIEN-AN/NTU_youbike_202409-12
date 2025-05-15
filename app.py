@@ -30,7 +30,13 @@ page = st.sidebar.radio("Choose a view:", ["Map View", "Hourly Line Chart", "Cur
 
 if page == "Map View":
     st.header("🗺️ Station Map with Hourly Stats")
-    display_hour = st.selectbox("Select an hour to display on map (24hr)", list(range(24)), index=8)
+    # 選單：選擇小時
+    hour = st.selectbox(
+        "請選擇要查看的時段",
+        [f"{h}:00 - {h+1}:00" for h in range(24)],
+        index=8
+    )
+    hour = int(hour.split(":")[0])
 
     def create_map(hour):
         m = folium.Map(location=[25.014, 121.535], zoom_start=15)
