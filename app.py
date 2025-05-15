@@ -3,6 +3,7 @@ import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # 載入資料
 stats_df = pd.read_csv("hourly_station_availability.csv")
