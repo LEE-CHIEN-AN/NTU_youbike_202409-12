@@ -97,7 +97,7 @@ elif page == "Current vs Stats 目前的 vs 統計資料":
         realtime_df["longitude"] = pd.to_numeric(realtime_df["longitude"], errors="coerce")
 
         # 地圖 + 下拉式選單選擇站點
-        st.markdown("請從地圖點選或下拉選單選擇一個站點以比較即時與歷史資料")
+        st.markdown("請從地圖點選或下拉選單 **擇一方式** 選擇一個站點以比較即時與歷史資料")
         select_map = folium.Map(location=[25.014, 121.535], zoom_start=15)
         for _, row in sites_df.iterrows():
             try:
