@@ -113,6 +113,8 @@ elif page == "Current API vs Stats":
         st.write("**Real-time Data:**")
         st.write(f"Current Rentable Bikes: {realtime_row['available_rent_bikes']}")
         st.write(f"Current Returnable Slots: {realtime_row['available_return_bikes']}")
+        st.write(f"Rent Availability: {realtime_row['available_rent_bikes']/realtime_row['total']:.2%}")
+        st.write(f"Return Availability: {realtime_row['available_return_bikes']/realtime_row['total']:.2%}")
 
         st.write("**Historical Average at This Hour:**")
         st.write(f"Avg. Rentable Bikes: {stat_row['avg_available_rent_bike']:.2f}")
