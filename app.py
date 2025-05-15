@@ -78,8 +78,14 @@ elif page == "Hourly Line Chart":
 elif page == "Current API vs Stats":
     st.header("📊 Real-Time vs Historical Hourly Statistics")
 
-    now = datetime.datetime.now()
+    import pytz
+
+    # 使用台灣時區取得目前小時
+    tz = pytz.timezone("Asia/Taipei")
+    now = datetime.datetime.now(tz)
     current_hour = now.hour
+
+  
 
     api_url = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
     try:
