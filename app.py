@@ -22,7 +22,7 @@ sites_df = sites_df.drop(columns=["index"])
 merged_df = pd.merge(stats_df, sites_df, on="sno")
 
 # Streamlit page setup
-st.set_page_config(page_title="YouBike Station Dashboard", layout="wide")
+st.set_page_config(page_title="YouBike Station Dashboard",layout="centered")
 st.title("🚲 NTU History YouBike Station Dashboard 台大 YouBike 歷史紀錄 車站儀表板  24/09/01-24/12/25")
 
 # Page selector
@@ -60,8 +60,8 @@ if page == "Map View 地圖":
                 icon=folium.Icon(color='blue', icon='bicycle', prefix='fa')
             ).add_to(marker_cluster)
         return m
-
-    st_data = st_folium(create_map(hour), width=1000, height=700)
+   
+    st_data = st_folium(create_map(hour), height=450, use_container_width=True)
 
 elif page == "Hourly Line Chart 每小時折線圖":
     st.header("📈 Hourly Trend for a Selected Station 選定車站的每小時趨勢")
@@ -111,7 +111,7 @@ elif page == "Current vs Stats 目前的 vs 統計資料":
             except:
                 continue
 
-        select_data = st_folium(select_map, width=700, height=450)
+        select_data = st_folium(select_map, height=450, use_container_width=True)
 
         # 下拉選單提供另一種選擇方式
         station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
@@ -162,7 +162,7 @@ elif page == "Current vs Stats 目前的 vs 統計資料":
             icon=folium.Icon(color='green', icon='info-sign')
         ).add_to(realtime_map)
 
-        st_folium(realtime_map, width=700, height=450)
+        st_folium(realtime_map,height=450, use_container_width=True)
 
     except Exception as e:
         st.error("Failed to fetch real-time data. Please try again later.")
