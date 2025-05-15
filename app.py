@@ -78,23 +78,16 @@ elif page == "Hourly Line Chart":
 elif page == "Current API vs Stats":
     st.header("📊 Real-Time vs Historical Hourly Statistics")
 
-    # 取得現在時間與小時
     now = datetime.datetime.now()
     current_hour = now.hour
 
-    # call API (台北市公共自行車即時資訊)
     api_url = "https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json"
     try:
         r = requests.get(api_url)
         realtime_df = pd.DataFrame(r.json())
         realtime_df["sno"] = pd.to_numeric(realtime_df["sno"], errors="coerce")
-        realtime_df = realtime_df.rename(columns={"sna": "sna_now", "sbi": "current_rentable", "bemp": "current_returnable"})
 
         # 使用者選擇站點
-        station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
-        selected_sna = st.selectbox("Select a station to compare", station_names['sna'].tolist(), key="compare")
-
-       # 使用者選擇站點
         station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
         selected_sna = st.selectbox("Select a station to compare", station_names['sna'].tolist(), key="compare")
 
