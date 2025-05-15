@@ -23,7 +23,7 @@ station_options = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
 
 
 # 篩選資料
-filtered_df = merged_df[(merged_df['hour'] == hour) & (merged_df['sna'].isin(selected_stations))]
+filtered_df = merged_df[(merged_df['hour'] == hour))]
 
 # 建立 Folium 地圖（僅顯示地點標記，不含統計）
 def create_map(data):
