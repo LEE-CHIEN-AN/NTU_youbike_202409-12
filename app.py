@@ -15,7 +15,7 @@ merged_df = pd.merge(stats_df, sites_df, on="sno")
 
 # Streamlit 網頁設定
 st.set_page_config(page_title="YouBike 站點統計地圖", layout="wide")
-st.title("🚲 YouBike 各站點小時統計地圖")
+st.title("🚲 YouBike 2024 9/1 - 12/25 台大各站點小時統計地圖")
 
 # 選單：選擇小時
 hour = st.selectbox("請選擇要查看的時段 (24hr)", list(range(24)), index=8)
@@ -50,40 +50,20 @@ def create_map(hour):
 # 顯示地圖
 st_data = st_folium(create_map(hour), width=1000, height=700)
 
-# 使用者選擇小時與站點（可複選）
-hour = st.selectbox("請選擇要查看的時段 (24hr)", list(range(24)), index=8)
-station_options = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
-station_names = station_options['sna'].tolist()
-selected_stations = st.multiselect("選擇要顯示的站點（可複選）", station_names, default=station_names[:5])
+# 折線圖區塊：選擇站點顯示 24 小時統計趨勢
+st.subheader("📈 選擇站點顯示 24 小時統計折線圖")
+station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')['sna'].tolist()
+selected_sna = st.selectbox("請選擇一個站點", station_names)
 
-# 篩選資料
-filtered_df = merged_df[(merged_df['hour'] == hour) & (merged_df['sna'].isin(selected_stations))]
+station_hourly = merged_df[merged_df['sna'] == selected_sna].sort_values("hour")
 
-# 建立 Folium 地圖
-def create_map(data):
-    m = folium.Map(location=[25.014, 121.535], zoom_start=15)
-    marker_cluster = MarkerCluster().add_to(m)
-
-    for _, row in data.iterrows():
-        popup_text = f"""
-        <b>{row['sna']}</b><br>
-        行政區: {row['sarea']}<br>
-        地址: {row['ar']}<br>
-        <hr>
-        <b>{hour}:00 - {hour+1}:00</b><br>
-        可借車輛數: {row['avg_available_rent_bike']:.2f}<br>
-        可還車輛數: {row['avg_available_return_bike']:.2f}<br>
-        可借機率: {row['avg_available_rent_ratio']:.2%}<br>
-        可還機率: {row['avg_available_return_ratio']:.2%}
-        """
-        folium.Marker(
-            location=[row['latitude'], row['longitude']],
-            popup=folium.Popup(popup_text, max_width=300),
-            icon=folium.Icon(color='blue', icon='bicycle', prefix='fa')
-        ).add_to(marker_cluster)
-
-    return m
-
-# 顯示地圖
-st_data = st_folium(create_map(filtered_df), width=1000, height=700)
-
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.plot(station_hourly['hour'], station_hourly['avg_available_rent_bike'], label="可借車輛數")
+ax.plot(station_hourly['hour'], station_hourly['avg_available_return_bike'], label="可還車輛數")
+ax.set_xticks(range(24))
+ax.set_xlabel("小時")
+ax.set_ylabel("車輛數")
+ax.set_title(f"{selected_sna} 每小時車輛可用情況")
+ax.legend()
+ax.grid(True)
+st.pyplot(fig)
