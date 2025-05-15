@@ -99,8 +99,23 @@ elif page == "Current vs Stats 目前的 vs 統計資料":
         realtime_df["sno"] = pd.to_numeric(realtime_df["sno"], errors="coerce")
 
         # 使用者選擇站點
-        station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
-        selected_sna = st.selectbox("Select a station to compare", station_names['sna'].tolist(), key="compare")
+        # 讓使用者從地圖上點選站點
+        st.markdown("請在下方地圖點選一個站點以比較即時與歷史資料")
+        # 只顯示站點位置的地圖
+        select_map = folium.Map(location=[25.014, 121.535], zoom_start=15)
+        for _, row in sites_df.iterrows():
+            folium.Marker(
+            location=[row['latitude'], row['longitude']],
+            popup=row['sna'],
+            icon=folium.Icon(color='blue', icon='bicycle', prefix='fa')
+            ).add_to(select_map)
+        select_data = st_folium(select_map, width=700, height=450)
+        selected_sna = None
+        if select_data and select_data.get("last_object_clicked_popup"):
+            selected_sna = select_data["last_object_clicked_popup"]
+        else:
+            st.info("請點選地圖上的站點。")
+            st.stop()
 
         station_info = sites_df[sites_df['sna'] == selected_sna].iloc[0]
         station_id = station_info['sno']
