@@ -17,11 +17,10 @@ merged_df = pd.merge(stats_df, sites_df, on="sno")
 st.set_page_config(page_title="YouBike 站點統計地圖", layout="wide")
 st.title("🚲 YouBike 各站點小時統計地圖")
 
-# 使用者選擇地圖顯示用的小時與站點（可複選）
+# 使用者選擇地圖顯示用的小時（可複選）
 hour = st.selectbox("請選擇要查看的時段 (24hr)", list(range(24)), index=8)
 station_options = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')
-station_names = station_options['sna'].tolist()
-selected_stations = st.multiselect("選擇要顯示的站點（可複選）", station_names, default=station_names[:5])
+
 
 # 篩選資料
 filtered_df = merged_df[(merged_df['hour'] == hour) & (merged_df['sna'].isin(selected_stations))]
