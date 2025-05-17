@@ -107,8 +107,9 @@ elif page == "Current vs Stats 目前的 vs 統計資料":
                 District 行政區: {site_area}<br>
                 Address 地址: {site_address}<br>
                 <hr>
-                <b>{current_hour}:00 - {current_hour+1}:00</b><br>
+                
                 <b>Real-Time Data 即時資料:</b><br>
+                資料更新時間（API）: {realtime_row['updateTime']}<br>
                 可借車輛數: {realtime_row['available_rent_bikes']}<br>
                 可還車輛數: {realtime_row['available_return_bikes']}<br>
                 可借機率: {realtime_row['available_rent_bikes']/realtime_row['total']:.2%}<br>
