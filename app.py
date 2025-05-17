@@ -114,6 +114,7 @@ elif page == "Current vs Stats 目前的 vs 統計資料":
                 可借機率: {realtime_row['available_rent_bikes']/realtime_row['total']:.2%}<br>
                 可還機率: {realtime_row['available_return_bikes']/realtime_row['total']:.2%}<br>
                 <hr>
+                <b>{current_hour}:00 - {current_hour+1}:00</b><br>
                 <b>Historical Avg 歷史平均:</b><br>
                 可借車輛數: {stat_row['avg_available_rent_bike']:.2f}<br>
                 可還車輛數: {stat_row['avg_available_return_bike']:.2f}<br>
