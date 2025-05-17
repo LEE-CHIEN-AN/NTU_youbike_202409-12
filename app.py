@@ -49,7 +49,7 @@ if page == "Map View 地圖":
             District 行政區: {row['sarea']}<br>
             Address 地址: {row['ar']}<br>
             <b>{hour}:00 - {hour+1}:00</b><br>
-            Avg. Rentable Bikes 可借車數: {row['avg_available_rent_bike']:.2f}<br>
+            Avg. Rentable Bikes 可借車數: {row['avg_available_rent_bike🚲']:.2f}<br>
             Avg. Returnable Bikes 可還車數: {row['avg_available_return_bike']:.2f}<br>
             Rent Availability 可借機率: {row['avg_available_rent_ratio']:.2%}<br>
             Return Availability 可還機率: {row['avg_available_return_ratio']:.2%}
