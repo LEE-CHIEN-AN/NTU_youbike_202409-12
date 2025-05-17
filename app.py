@@ -138,7 +138,7 @@ elif page == "Current vs Stats 目前的 vs 統計資料":
 
         st.write("**Historical Average at This Hour:**")
         st.write(f"Avg. Rentable Bikes 歷史此小時平均可借車輛數: {stat_row['avg_available_rent_bike']:.2f}")
-        st.write(f"Avg. Returnable Bikes 歷史此小時平均可借車輛數: {stat_row['avg_available_return_bike']:.2f}")
+        st.write(f"Avg. Returnable Bikes 歷史此小時平均可還車輛數: {stat_row['avg_available_return_bike']:.2f}")
         st.write(f"Rentable bike count rate 可借到車的機率: {stat_row['avg_available_rent_ratio']:.2%}")
         st.write(f"Returnable bike count rate 可還到車的機率: {stat_row['avg_available_return_ratio']:.2%}")
 
