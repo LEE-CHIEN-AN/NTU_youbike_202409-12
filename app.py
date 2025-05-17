@@ -63,23 +63,6 @@ if page == "Map View 地圖":
    
     st_data = st_folium(create_map(hour), height=450, use_container_width=True)
 
-elif page == "Hourly Line Chart 每小時折線圖":
-    st.header("📈 Hourly Trend for a Selected Station 選定車站的每小時趨勢")
-    station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')['sna'].tolist()
-    selected_sna = st.selectbox("Select a station", station_names)
-    station_hourly = merged_df[merged_df['sna'] == selected_sna].sort_values("hour")
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.plot(station_hourly['hour'], station_hourly['avg_available_rent_bike'], label="Rentable Bikes")
-    ax.plot(station_hourly['hour'], station_hourly['avg_available_return_bike'], label="Returnable Bikes")
-    ax.set_xticks(range(24))
-    ax.set_xlabel("Hour")
-    ax.set_ylabel("Bike Count")
-    ax.set_title(f"Hourly Availability")
-    ax.legend()
-    #ax.grid(True)
-    st.pyplot(fig)
-
 elif page == "Current vs Stats 目前的 vs 統計資料":
     st.header("📊 Real-Time vs Historical Hourly Statistics 即時 vs 歷史每小時統計資料")
 
@@ -150,3 +133,19 @@ elif page == "Current vs Stats 目前的 vs 統計資料":
         st.error("Failed to fetch real-time data. Please try again later.")
         st.error(str(e))
 
+elif page == "Hourly Line Chart 每小時折線圖":
+    st.header("📈 Hourly Trend for a Selected Station 選定車站的每小時趨勢")
+    station_names = sites_df[['sno', 'sna']].drop_duplicates().sort_values('sna')['sna'].tolist()
+    selected_sna = st.selectbox("Select a station", station_names)
+    station_hourly = merged_df[merged_df['sna'] == selected_sna].sort_values("hour")
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(station_hourly['hour'], station_hourly['avg_available_rent_bike'], label="Rentable Bikes")
+    ax.plot(station_hourly['hour'], station_hourly['avg_available_return_bike'], label="Returnable Bikes")
+    ax.set_xticks(range(24))
+    ax.set_xlabel("Hour")
+    ax.set_ylabel("Bike Count")
+    ax.set_title(f"Hourly Availability")
+    ax.legend()
+    #ax.grid(True)
+    st.pyplot(fig)
