@@ -26,7 +26,7 @@ st.set_page_config(page_title="YouBike Station Dashboard",layout="centered")
 st.title("🚲 NTU History YouBike Station Dashboard 台大 YouBike 歷史紀錄 車站儀表板  24/09/01-24/12/25")
 
 # Page selector
-page = st.sidebar.radio("Choose a view:", ["Map View 地圖", "Hourly Line Chart 每小時折線圖", "Current vs Stats 目前的 vs 統計資料"])
+page = st.sidebar.radio("Choose a view:", ["Map View 地圖", "Current vs Stats 目前的 vs 統計資料"] ,"Hourly Line Chart 每小時折線圖")
 
 if page == "Map View 地圖":
     st.header("🗺️ Station Map with Hourly Stats")
