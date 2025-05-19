@@ -26,7 +26,12 @@ st.set_page_config(page_title="YouBike Station Dashboard", layout="wide")
 st.title("🚲 NTU History YouBike Station Dashboard 台大 YouBike 歷史紀錄 車站儀表板  24/09/01-24/12/25")
 
 # Page selector
-page = st.sidebar.radio("Choose a view:", ["Map View 地圖", "Current vs Stats 目前的 vs 統計資料","Hourly Line Chart 每小時折線圖" ])
+page = st.sidebar.radio("Choose a view:", [
+    "Map View 地圖",
+    "Current vs Stats 目前的 vs 統計資料",
+    "Hourly Line Chart 每小時折線圖",
+    "See-Bike Rate 分級"
+])
 
 if page == "Map View 地圖":
     st.header("🗺️ Station Map with Hourly Stats")
@@ -151,4 +156,41 @@ elif page == "Hourly Line Chart 每小時折線圖":
     ax.set_title(f"Hourly Availability")
     ax.legend()
     #ax.grid(True)
+    st.pyplot(fig)
+elif page == "See-Bike Rate 分級":
+    st.header("🚦 有效見車率分級分析")
+
+    def classify_availability(ratio):
+        if ratio >= 0.9:
+            return "高見車率"
+        elif ratio >= 0.6:
+            return "中見車率"
+        else:
+            return "低見車率"
+
+    # 先複製一份資料避免影響原始 merged_df
+    df_for_ratio = merged_df.copy()
+    df_for_ratio["rent_ratio_high_enough"] = df_for_ratio["avg_available_rent_ratio"] > 0.2
+
+    # 計算每個站點的有效見車率（每個小時是否可借 > 20%）
+    effective_rate_df = df_for_ratio.groupby("sno")["rent_ratio_high_enough"].mean().reset_index()
+    effective_rate_df.rename(columns={"rent_ratio_high_enough": "effective_see_bike_rate"}, inplace=True)
+
+    # 加入站點名稱與行政區
+    effective_rate_df = effective_rate_df.merge(sites_df[["sno", "sna", "sarea"]].drop_duplicates(), on="sno")
+
+    # 加上分級欄位
+    effective_rate_df["見車率等級"] = effective_rate_df["effective_see_bike_rate"].apply(classify_availability)
+
+    # 排序後顯示
+    st.dataframe(effective_rate_df.sort_values("effective_see_bike_rate", ascending=False), use_container_width=True)
+
+    # 圖示：各站點有效見車率長條圖
+    st.subheader("📊 各站點有效見車率長條圖")
+    fig, ax = plt.subplots(figsize=(12, 6))
+    top_n = effective_rate_df.sort_values("effective_see_bike_rate", ascending=False).head(20)
+    ax.barh(top_n["sna"], top_n["effective_see_bike_rate"])
+    ax.set_xlabel("有效見車率 (比例)")
+    ax.set_title("Top 20 有效見車率站點")
+    ax.invert_yaxis()
     st.pyplot(fig)
