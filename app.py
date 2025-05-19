@@ -79,10 +79,6 @@ if page == "Map View 地圖":
             Avg. Returnable Bikes 可還車數: {row['avg_available_return_bike']:.2f}<br>
             Rent Availability 可借機率: {row['avg_available_rent_ratio']:.2%}<br>
             Return Availability 可還機率: {row['avg_available_return_ratio']:.2%}<br>
-            <hr>
-            <b>📈 長期統計：</b><br>
-            平均可借比例: {row['avg_available_rent_ratio']:.2%}<br>
-            平均可還比例: {row['avg_available_return_ratio']:.2%}<br>
             有效見車率 (全時段): {row['effective_see_bike_rate']:.2%}<br>
             {"<span style='color:red'><b>🚨 極度供不應求站</b></span>" if row["critical_shortage"] else ""}
             """
