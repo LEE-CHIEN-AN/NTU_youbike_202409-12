@@ -29,7 +29,8 @@ st.title("🚲 NTU History YouBike Station Dashboard 台大 YouBike 歷史紀錄
 page = st.sidebar.radio("Choose a view:", ["Map View 地圖","Current vs Stats 目前的 vs 統計資料", "Hourly Line Chart 每小時折線圖", "See-Bike Rate 分級"])
 
 if page == "Map View 地圖":
-    st.header("🗺️ Station Map with Hourly Stats")
+    st.header("🗺️ Station Map with Hourly Stats + Availability Classification")
+
     # 選單：選擇小時
     hour = st.selectbox(
         "請選擇要查看的時段",
@@ -38,10 +39,35 @@ if page == "Map View 地圖":
     )
     hour = int(hour.split(":")[0])
 
-    def create_map(hour):
+    # 計算有效見車率（全時段統計）
+    df_temp = merged_df.copy()
+    df_temp["rent_ratio_high_enough"] = df_temp["avg_available_rent_ratio"] > 0.2
+
+    # 每站有效見車率（比例）
+    see_bike_rate_df = df_temp.groupby("sno")["rent_ratio_high_enough"].mean().reset_index()
+    see_bike_rate_df.rename(columns={"rent_ratio_high_enough": "effective_see_bike_rate"}, inplace=True)
+
+    # 站點屬性補齊
+    see_bike_rate_df = see_bike_rate_df.merge(
+        merged_df[["sno", "avg_available_rent_ratio", "avg_available_return_ratio", "hour"]].groupby("sno").mean().reset_index(),
+        on="sno"
+    )
+
+    # 加入「極度供不應求站點」判斷欄位
+    see_bike_rate_df["critical_shortage"] = (
+        (see_bike_rate_df["avg_available_rent_ratio"] < 0.2) &
+        (see_bike_rate_df["effective_see_bike_rate"] < 0.5) &
+        (see_bike_rate_df["avg_available_return_ratio"] < 0.2)
+    )
+
+    # 合併到當前小時資料中
+    hour_data = merged_df[merged_df['hour'] == hour]
+    hour_data = hour_data.merge(see_bike_rate_df[["sno", "effective_see_bike_rate", "critical_shortage"]], on="sno", how="left")
+
+    # 地圖函式
+    def create_map(hour_data):
         m = folium.Map(location=[25.014, 121.535], zoom_start=15)
         marker_cluster = MarkerCluster().add_to(m)
-        hour_data = merged_df[merged_df['hour'] == hour]
 
         for _, row in hour_data.iterrows():
             popup_text = f"""
@@ -52,17 +78,25 @@ if page == "Map View 地圖":
             Avg. Rentable Bikes 可借車數: {row['avg_available_rent_bike']:.2f}<br>
             Avg. Returnable Bikes 可還車數: {row['avg_available_return_bike']:.2f}<br>
             Rent Availability 可借機率: {row['avg_available_rent_ratio']:.2%}<br>
-            Return Availability 可還機率: {row['avg_available_return_ratio']:.2%}
+            Return Availability 可還機率: {row['avg_available_return_ratio']:.2%}<br>
+            <hr>
+            <b>📈 長期統計：</b><br>
+            平均可借比例: {row['avg_available_rent_ratio']:.2%}<br>
+            平均可還比例: {row['avg_available_return_ratio']:.2%}<br>
+            有效見車率 (全時段): {row['effective_see_bike_rate']:.2%}<br>
+            {"<span style='color:red'><b>🚨 極度供不應求站</b></span>" if row["critical_shortage"] else ""}
             """
+            icon_color = "red" if row["critical_shortage"] else "blue"
+
             folium.Marker(
                 location=[row['latitude'], row['longitude']],
-                popup=folium.Popup(popup_text, max_width=300),
-                icon=folium.Icon(color='blue', icon='bicycle', prefix='fa')
+                popup=folium.Popup(popup_text, max_width=320),
+                icon=folium.Icon(color=icon_color, icon='bicycle', prefix='fa')
             ).add_to(marker_cluster)
+
         return m
 
-    st_data = st_folium(create_map(hour), width=1000, height=700)
-
+    st_data = st_folium(create_map(hour_data), width=1000, height=700)
 
 elif page == "Current vs Stats 目前的 vs 統計資料":
     st.header("📊 Real-Time vs Historical Hourly Statistics 即時 vs 歷史每小時統計資料")
@@ -152,7 +186,9 @@ elif page == "Hourly Line Chart 每小時折線圖":
     ax.legend()
     #ax.grid(True)
     st.pyplot(fig)
+    
 elif page == "See-Bike Rate 分級":
+
     st.header("🚦 有效見車率分級分析")
 
     def classify_availability(ratio):
