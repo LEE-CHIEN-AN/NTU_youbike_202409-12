@@ -38,7 +38,9 @@ if page == "Map View 地圖":
         index=8
     )
     hour = int(hour.split(":")[0])
-
+   
+    st.markdown("若 available_rent_bikes / total > 0.2，則該時段視為「可借」")
+    st.markdown("有效見車率 = 可借時段數 / 總時段數")
     # 計算有效見車率（全時段統計）
     df_temp = merged_df.copy()
     df_temp["rent_ratio_high_enough"] = df_temp["avg_available_rent_ratio"] > 0.2
