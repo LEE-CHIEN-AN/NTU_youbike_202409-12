@@ -215,11 +215,11 @@ elif page == "See-Bike Rate 分級":
     st.dataframe(effective_rate_df.sort_values("effective_see_bike_rate", ascending=False), use_container_width=True)
 
     # 圖示：各站點有效見車率長條圖
-    st.subheader("📊 各站點有效見車率長條圖")
+    st.subheader("📊 bar chart")
     fig, ax = plt.subplots(figsize=(12, 6))
     top_n = effective_rate_df.sort_values("effective_see_bike_rate", ascending=False).head(20)
     ax.barh(top_n["sna"], top_n["effective_see_bike_rate"])
-    ax.set_xlabel("有效見車率 (比例)")
-    ax.set_title("Top 20 有效見車率站點")
+    ax.set_xlabel("effective_see_bike_rate")
+    ax.set_title("Top 20 bike stop")
     ax.invert_yaxis()
     st.pyplot(fig)
